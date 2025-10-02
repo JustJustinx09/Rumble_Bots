@@ -1,47 +1,62 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Robot_movements : MonoBehaviour
 {
-    public float moveSpeed = 5f;
-    public float jumpForce = 5f;
+    [Header("Movement")]
+    public float moveSpeed = 5f; // Speed of movement
+    public float airMultiplier = 0.5f; // Optional: reduces control if not on ground (can just set to 1f if you don’t care)
 
-    private Rigidbody rb;
-    private bool isGrounded = true;
+    public Transform orientation; // Used to move relative to camera/player facing direction
+
+    float horizontalInput;
+    float verticalInput;
+
+    Vector3 moveDirection;
+    Rigidbody rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        // Freeze rotation so player doesn’t tip over
-        rb.freezeRotation = true;
+        rb.freezeRotation = true; // Prevent physics from spinning the player
     }
 
     void Update()
     {
-        // Movement input
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-
-        // Create movement vector relative to world
-        Vector3 move = new Vector3(x, 0f, z) * moveSpeed;
-        Vector3 newVelocity = new Vector3(move.x, rb.linearVelocity.y, move.z);
-
-        rb.linearVelocity = newVelocity;
-
-        // Jump
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            isGrounded = false;
-        }
+        MyInput();
+        SpeedControl();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    void FixedUpdate()
     {
-        // Simple ground check: if we touch something below, reset grounded
-        if (collision.contacts[0].normal.y > 0.5f)
+        MovePlayer();
+    }
+
+    private void MyInput()
+    {
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
+    }
+
+    private void MovePlayer()
+    {
+        // Move relative to orientation (camera/player facing)
+        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+
+        // Add force for movement
+        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+    }
+
+    private void SpeedControl()
+    {
+        // Only limit X/Z speed, not Y
+        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+
+        if (flatVel.magnitude > moveSpeed)
         {
-            isGrounded = true;
+            Vector3 limitedVel = flatVel.normalized * moveSpeed;
+            rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
         }
     }
 }
-
