@@ -17,13 +17,13 @@ public class TrainingDummy : MonoBehaviour
         isHit = true;
         animator.SetTrigger("Hit");
 
-        // Optional: disable movement if dummy can move
+       
         // e.g., Rigidbody or NavMeshAgent
         Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null) rb.isKinematic = true;
 
-        // Reset after animation duration (replace 0.5f with your animation length)
-        Invoke(nameof(ResetDummy), 0.5f);
+       
+        Invoke(nameof(ResetDummy), 9f);
     }
 
     void ResetDummy()
