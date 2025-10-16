@@ -4,20 +4,19 @@ using UnityEngine;
 
 public class Robot_movements : MonoBehaviour
 {
-    [Header("Movement")]
+    [Header("Movement Settings")]
     public float moveSpeed = 5f;
-    public float airMultiplier = 0.5f; 
+    public float airMultiplier = 0.5f;
     public bool canMove = true;
 
     [Header("References")]
     public Transform orientation;
     private Animator animator;
+    private Rigidbody rb;
 
-    float horizontalInput;
-    float verticalInput;
-
-    Vector3 moveDirection;
-    Rigidbody rb;
+    private float horizontalInput;
+    private float verticalInput;
+    private Vector3 moveDirection;
 
     void Start()
     {
@@ -30,21 +29,16 @@ public class Robot_movements : MonoBehaviour
     void Update()
     {
         if (!canMove)
-        {
-            if (animator != null)
-                animator.SetBool("isWalking", false);
             return;
-        }
 
         MyInput();
         SpeedControl();
 
-        // ✅ Tell Animator when to walk
+        // ✅ Handle walking animation
+        bool isMoving = horizontalInput != 0 || verticalInput != 0;
+
         if (animator != null)
-        {
-            bool isMoving = horizontalInput != 0 || verticalInput != 0;
             animator.SetBool("isWalking", isMoving);
-        }
     }
 
     void FixedUpdate()
@@ -61,15 +55,16 @@ public class Robot_movements : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
     }
 
-   private void MovePlayer()
-{
-    moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
-    moveDirection.y = 0f; // ✅ remove any upward force
-    moveDirection.Normalize();
+    private void MovePlayer()
+    {
+        // ✅ Calculate movement direction relative to orientation (camera/player facing)
+        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        moveDirection.y = 0f; // prevent flying upward
+        moveDirection.Normalize();
 
-    rb.AddForce(moveDirection * moveSpeed * 10f, ForceMode.Force);
-}
-
+        // ✅ Apply force for movement
+        rb.AddForce(moveDirection * moveSpeed * 10f, ForceMode.Force);
+    }
 
     private void SpeedControl()
     {

@@ -24,7 +24,8 @@ public class Robot_Action : MonoBehaviour
         {
             PerformAttack("Jab", jabDuration);
         }
-        else if (Input.GetKeyDown(KeyCode.K))
+
+        if (Input.GetKeyDown(KeyCode.H))
         {
             PerformAttack("Hook", hookDuration);
         }
@@ -35,11 +36,14 @@ public class Robot_Action : MonoBehaviour
         isAttacking = true;
         animator.SetTrigger(triggerName);
 
-        // Optional: Stop movement while attacking
+        // Stop movement while attacking
         Robot_movements move = GetComponent<Robot_movements>();
         if (move != null) move.canMove = false;
 
+        // Set next time an attack is allowed
         nextAttackTime = Time.time + attackCooldown;
+
+        // Reset attack after duration
         Invoke(nameof(ResetAttack), duration);
     }
 
@@ -51,4 +55,13 @@ public class Robot_Action : MonoBehaviour
         Robot_movements move = GetComponent<Robot_movements>();
         if (move != null) move.canMove = true;
     }
+
+    void OnCollisionEnter(Collision collision)
+{
+    if (collision.gameObject.CompareTag("Dummy"))
+    {
+        collision.gameObject.GetComponent<TrainingDummy>().TakeHit();
+    }
+}
+
 }
