@@ -5,10 +5,13 @@ using UnityEngine;
 public class Robot_movements : MonoBehaviour
 {
     [Header("Movement")]
-    public float moveSpeed = 5f; // Speed of movement
-    public float airMultiplier = 0.5f; // Optional: reduces control if not on ground (can just set to 1f if you don’t care)
+    public float moveSpeed = 5f;
+    public float airMultiplier = 0.5f; 
+    public bool canMove = true;
 
-    public Transform orientation; // Used to move relative to camera/player facing direction
+    [Header("References")]
+    public Transform orientation;
+    private Animator animator;
 
     float horizontalInput;
     float verticalInput;
@@ -19,17 +22,36 @@ public class Robot_movements : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true; // Prevent physics from spinning the player
+        rb.freezeRotation = true;
+
+        animator = GetComponent<Animator>();
     }
 
     void Update()
     {
+        if (!canMove)
+        {
+            if (animator != null)
+                animator.SetBool("isWalking", false);
+            return;
+        }
+
         MyInput();
         SpeedControl();
+
+        // ✅ Tell Animator when to walk
+        if (animator != null)
+        {
+            bool isMoving = horizontalInput != 0 || verticalInput != 0;
+            animator.SetBool("isWalking", isMoving);
+        }
     }
 
     void FixedUpdate()
     {
+        if (!canMove)
+            return;
+
         MovePlayer();
     }
 
@@ -39,18 +61,18 @@ public class Robot_movements : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
     }
 
-    private void MovePlayer()
-    {
-        // Move relative to orientation (camera/player facing)
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+   private void MovePlayer()
+{
+    moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+    moveDirection.y = 0f; // ✅ remove any upward force
+    moveDirection.Normalize();
 
-        // Add force for movement
-        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
-    }
+    rb.AddForce(moveDirection * moveSpeed * 10f, ForceMode.Force);
+}
+
 
     private void SpeedControl()
     {
-        // Only limit X/Z speed, not Y
         Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
 
         if (flatVel.magnitude > moveSpeed)
