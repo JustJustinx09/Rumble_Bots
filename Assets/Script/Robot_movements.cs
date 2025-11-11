@@ -1,12 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Robot_movements : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
-    public float airMultiplier = 0.5f;
     public bool canMove = true;
 
     [Header("References")]
@@ -21,31 +18,25 @@ public class Robot_movements : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.freezeRotation = true;
-
         animator = GetComponent<Animator>();
+        rb.freezeRotation = true;
     }
 
     void Update()
     {
         if (!canMove)
+        {
+            if (animator != null) animator.SetBool("isWalking", false);
             return;
+        }
 
         MyInput();
-        SpeedControl();
-
-        // ✅ Handle walking animation
-        bool isMoving = horizontalInput != 0 || verticalInput != 0;
-
-        if (animator != null)
-            animator.SetBool("isWalking", isMoving);
+        AnimateMovement();
     }
 
     void FixedUpdate()
     {
-        if (!canMove)
-            return;
-
+        if (!canMove) return;
         MovePlayer();
     }
 
@@ -57,23 +48,24 @@ public class Robot_movements : MonoBehaviour
 
     private void MovePlayer()
     {
-        // ✅ Calculate movement direction relative to orientation (camera/player facing)
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
-        moveDirection.y = 0f; // prevent flying upward
+        // ✅ Move relative to flat orientation (no tilt)
+        Vector3 flatForward = orientation.forward;
+        flatForward.y = 0;
+        flatForward.Normalize();
+
+        Vector3 flatRight = orientation.right;
+        flatRight.y = 0;
+        flatRight.Normalize();
+
+        moveDirection = (flatForward * verticalInput) + (flatRight * horizontalInput);
         moveDirection.Normalize();
 
-        // ✅ Apply force for movement
-        rb.AddForce(moveDirection * moveSpeed * 10f, ForceMode.Force);
+        rb.MovePosition(rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime);
     }
 
-    private void SpeedControl()
+    private void AnimateMovement()
     {
-        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-
-        if (flatVel.magnitude > moveSpeed)
-        {
-            Vector3 limitedVel = flatVel.normalized * moveSpeed;
-            rb.linearVelocity = new Vector3(limitedVel.x, rb.linearVelocity.y, limitedVel.z);
-        }
+        bool isMoving = horizontalInput != 0 || verticalInput != 0;
+        if (animator != null) animator.SetBool("isWalking", isMoving);
     }
 }

@@ -11,13 +11,14 @@ using UnityEngine;
 
 public class MoveCamera : MonoBehaviour
 {
-    //exposed Transform that we can drag something into in the inspector.
     public Transform cameraPosition;
+    public float smoothSpeed = 8f; // optional smooth movement
 
-    void Update()
+    void LateUpdate()
     {
-        //All we're doing is making sure we move our position to the cameraPosition's position on the Player Object
-        //It's a good idea not to have a camera attatched directly to a RigidBody object, so this is the next best thing
-        transform.position = cameraPosition.position;
+        if (cameraPosition == null) return;
+
+        transform.position = Vector3.Lerp(transform.position, cameraPosition.position, smoothSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, cameraPosition.rotation, smoothSpeed * Time.deltaTime);
     }
 }
