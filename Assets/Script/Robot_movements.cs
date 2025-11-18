@@ -6,10 +6,12 @@ public class Robot_movements : MonoBehaviour
     public float moveSpeed = 5f;
     public bool canMove = true;
 
+
     [Header("References")]
     public Transform orientation;
     private Animator animator;
     private Rigidbody rb;
+     private AudioSource audioSource; 
 
     private float horizontalInput;
     private float verticalInput;
@@ -20,6 +22,7 @@ public class Robot_movements : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
         rb.freezeRotation = true;
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -32,6 +35,8 @@ public class Robot_movements : MonoBehaviour
 
         MyInput();
         AnimateMovement();
+
+        
     }
 
     void FixedUpdate()
@@ -67,5 +72,28 @@ public class Robot_movements : MonoBehaviour
     {
         bool isMoving = horizontalInput != 0 || verticalInput != 0;
         if (animator != null) animator.SetBool("isWalking", isMoving);
+
+         // ✅ Play/stop movement sound
+        if (isMoving)
+            PlayMovementAudio();
+        else
+            StopMovementAudio();
+    }
+     // ✅ Handles walking sound
+    private void PlayMovementAudio()
+    {
+        if (audioSource != null && !audioSource.isPlaying)
+        {
+            audioSource.Play();
+        }
+    }
+
+    private void StopMovementAudio()
+    {
+        if (audioSource != null && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
     }
 }
+

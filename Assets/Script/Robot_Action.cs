@@ -2,66 +2,69 @@ using UnityEngine;
 
 public class Robot_Action : MonoBehaviour
 {
+    [Header("References")]
     private Animator animator;
+    private AudioSource audioSource;
+    public Robot_movements movement;
+
+    [Header("State")]
+    public bool canMove = true;
     private bool isAttacking = false;
+    private float nextAttackTime = 0f;
 
     [Header("Attack Settings")]
-    public float jabDuration = 0.4f;
-    public float hookDuration = 0.6f;
-    public float attackCooldown = 0.5f;
-    private float nextAttackTime = 0f;
+    public float attackCooldown = 0.4f;
+    public float attackDuration = 0.4f;   // how long the animation locks you
+
+    [Header("Audio")]
+    public AudioClip jabSound;
+    public AudioClip hookSound;
 
     void Start()
     {
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
+        movement = GetComponent<Robot_movements>();
     }
 
     void Update()
     {
-        if (Time.time < nextAttackTime || isAttacking) return;
+        if (!canMove) return;
+        if (isAttacking) return;
+        if (Time.time < nextAttackTime) return;
 
         if (Input.GetKeyDown(KeyCode.J))
-        {
-            PerformAttack("Jab", jabDuration);
-        }
+            PerformAttack("Jab");
 
         if (Input.GetKeyDown(KeyCode.H))
-        {
-            PerformAttack("Hook", hookDuration);
-        }
+            PerformAttack("Hook");
     }
 
-    void PerformAttack(string triggerName, float duration)
+    void PerformAttack(string trigger)
     {
         isAttacking = true;
-        animator.SetTrigger(triggerName);
-
-        // Stop movement while attacking
-        Robot_movements move = GetComponent<Robot_movements>();
-        if (move != null) move.canMove = false;
-
-        // Set next time an attack is allowed
         nextAttackTime = Time.time + attackCooldown;
 
-        // Reset attack after duration
-        Invoke(nameof(ResetAttack), duration);
+        if (movement != null)
+            movement.canMove = false;
+
+        animator.SetTrigger(trigger);
+
+        if (trigger == "Jab" && jabSound != null)
+            audioSource.PlayOneShot(jabSound);
+
+        if (trigger == "Hook" && hookSound != null)
+            audioSource.PlayOneShot(hookSound);
+
+        // End attack after a fixed amount of time (no animation event needed)
+        Invoke(nameof(EndAttack), attackDuration);
     }
 
-    void ResetAttack()
+    void EndAttack()
     {
         isAttacking = false;
 
-        // Re-enable movement
-        Robot_movements move = GetComponent<Robot_movements>();
-        if (move != null) move.canMove = true;
+        if (movement != null)
+            movement.canMove = true;
     }
-
-    void OnCollisionEnter(Collision collision)
-{
-    if (collision.gameObject.CompareTag("Dummy"))
-    {
-        collision.gameObject.GetComponent<TrainingDummy>().TakeHit();
-    }
-}
-
 }

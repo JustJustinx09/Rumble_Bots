@@ -1,95 +1,240 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections;
+
+public enum RoundState
+{
+    PreRound,
+    Countdown,
+    Fight,
+    RoundOver,
+    MatchOver
+}
 
 public class RoundManager : MonoBehaviour
 {
-    public float roundTime = 60f;   // 1 minute per round
+    [Header("State")]
+    public RoundState state = RoundState.PreRound;
+
+    [Header("Round Settings")]
+    public float roundTime = 60f;
     private float currentTime;
 
     public int maxRounds = 3;
     private int currentRound = 1;
 
+    [Header("UI")]
     public Text timerText;
     public Text roundText;
 
+    [Header("Players")]
     public PlayerHealth player1;
     public PlayerHealth player2;
 
-    private bool roundActive = false;
+    [Header("Movement Scripts")]
+    public Robot_movements player1Movement;
+    public EnemyMovement player2Movement;
 
-    void Start()
+    [Header("Attack Scripts")]
+    public Robot_Action player1Attack;
+    public EnemyCombat player2Attack;
+
+    [Header("Spawn Points")]
+    public Transform player1Spawn;
+    public Transform player2Spawn;
+
+    private void Start()
     {
-        StartRound();
+        GoToState(RoundState.PreRound);
     }
 
-    void Update()
+    private void Update()
     {
-        if (roundActive)
-        {
-            currentTime -= Time.deltaTime;
-            timerText.text = Mathf.Ceil(currentTime).ToString();
+        if (state == RoundState.Fight)
+            RunFightTimer();
+    }
 
-            if (currentTime <= 0)
-            {
-                EndRoundTimeUp();
-            }
+    // ==========================================
+    //  STATE MACHINE CORE
+    // ==========================================
+    private void GoToState(RoundState newState)
+    {
+        state = newState;
+
+        switch (newState)
+        {
+            case RoundState.PreRound:
+                HandlePreRound();
+                break;
+
+            case RoundState.Countdown:
+                StartCoroutine(DoCountdown());
+                break;
+
+            case RoundState.Fight:
+                StartFight();
+                break;
+
+            case RoundState.RoundOver:
+                HandleRoundOver();
+                break;
+
+            case RoundState.MatchOver:
+                HandleMatchOver();
+                break;
         }
     }
 
-    public void StartRound()
+    // ==========================================
+    //  PRE-ROUND
+    // ==========================================
+    private void HandlePreRound()
     {
-        currentTime = roundTime;
         roundText.text = "Round " + currentRound;
-        roundActive = true;
 
-        // Reset health for both players
         player1.ResetHealth();
         player2.ResetHealth();
+
+        ResetPositions();
+        DisablePlayerControl();
+
+        Invoke(nameof(StartCountdownState), 1.5f);
+    }
+
+    private void StartCountdownState()
+    {
+        GoToState(RoundState.Countdown);
+    }
+
+    // ==========================================
+    //  COUNTDOWN
+    // ==========================================
+    private IEnumerator DoCountdown()
+    {
+        roundText.text = "3";
+        yield return new WaitForSeconds(1f);
+
+        roundText.text = "2";
+        yield return new WaitForSeconds(1f);
+
+        roundText.text = "1";
+        yield return new WaitForSeconds(1f);
+
+        roundText.text = "FIGHT!";
+        yield return new WaitForSeconds(0.5f);
+
+        GoToState(RoundState.Fight);
+    }
+
+    // ==========================================
+    //  FIGHT
+    // ==========================================
+    private void StartFight()
+    {
+        EnablePlayerControl();
+
+        currentTime = roundTime;
+        timerText.enabled = true;
+        roundText.text = "";
+    }
+
+    private void RunFightTimer()
+    {
+        currentTime -= Time.deltaTime;
+        timerText.text = Mathf.Ceil(currentTime).ToString();
+
+        if (currentTime <= 0)
+        {
+            PlayerHealth loser =
+                (player1.currentHealth > player2.currentHealth) ? player2 : player1;
+
+            EndRound(loser);
+        }
+    }
+
+    // ==========================================
+    //  END ROUND
+    // ==========================================
+    public void PlayerDied()
+    {
+        if (player1.currentHealth <= 0) EndRound(player1);
+        else EndRound(player2);
     }
 
     public void EndRound(PlayerHealth loser)
     {
-        roundActive = false;
+        DisablePlayerControl();
+        GoToState(RoundState.RoundOver);
+    }
 
+    private void HandleRoundOver()
+    {
         currentRound++;
 
         if (currentRound > maxRounds)
         {
-            EndMatch();
+            GoToState(RoundState.MatchOver);
+            return;
         }
-        else
-        {
-            Invoke("StartRound", 2f);
-        }
+
+        Invoke(nameof(StartNextPreRound), 3f);
     }
 
-    public void PlayerDied()
+    private void StartNextPreRound()
     {
-        if (player1.currentHealth <= 0)
-            EndRound(player1);
-        else
-            EndRound(player2);
+        GoToState(RoundState.PreRound);
     }
 
-    private void EndRoundTimeUp()
+    // ==========================================
+    //  MATCH OVER
+    // ==========================================
+    private void HandleMatchOver()
     {
-        // If time runs out, player with higher health wins
-        if (player1.currentHealth > player2.currentHealth)
-            EndRound(player2);
-        else
-            EndRound(player1);
-    }
+        roundText.text = "MATCH OVER";
+        DisablePlayerControl();
 
-    private void EndMatch()
-    {
-        roundText.text = "Match Over";
-        // Reload the scene or go to menu
-        Invoke("Restart", 3f);
+        Invoke(nameof(Restart), 3f);
     }
 
     private void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    // ==========================================
+    //  UTILITY
+    // ==========================================
+    private void ResetPositions()
+    {
+        player1.transform.position = player1Spawn.position;
+        player1.transform.rotation = player1Spawn.rotation;
+
+        player2.transform.position = player2Spawn.position;
+        player2.transform.rotation = player2Spawn.rotation;
+
+        Rigidbody rb1 = player1.GetComponent<Rigidbody>();
+        if (rb1) rb1.linearVelocity = Vector3.zero;
+
+        Rigidbody rb2 = player2.GetComponent<Rigidbody>();
+        if (rb2) rb2.linearVelocity = Vector3.zero;
+    }
+
+    private void DisablePlayerControl()
+    {
+        player1Movement.canMove = false;
+        player2Movement.canMove = false;
+
+        player1Attack.canMove = false;
+        player2Attack.canMove = false;
+    }
+
+    private void EnablePlayerControl()
+    {
+        player1Movement.canMove = true;
+        player2Movement.canMove = true;
+
+        player1Attack.canMove = true;
+        player2Attack.canMove = true;
     }
 }
