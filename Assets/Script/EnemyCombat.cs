@@ -68,9 +68,9 @@ public class EnemyCombat : MonoBehaviour
         // Execute behaviors based on state
         if (currentState == State.Chase && !isAttacking)
         {
-            // Tell your movement script to move; or you can put minimal move here
+            // 
             animator.SetBool("isWalking", true);
-            // movement is handled elsewhere
+            
         }
         else
         {
@@ -104,7 +104,7 @@ public class EnemyCombat : MonoBehaviour
         animator.SetTrigger(trigger);
 
         // After animation, return to chase or idle
-        float animationDuration = 4f; // adjust as needed for your jab/kick clips
+        float animationDuration = 4f; // 
         Invoke(nameof(EndAttack), animationDuration);
     }
 
@@ -118,4 +118,5 @@ public class EnemyCombat : MonoBehaviour
     {
         return isAttacking;
     }
+  
 }

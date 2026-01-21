@@ -8214,8 +8214,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1749551344}
-  animator: {fileID: 0}
-  rb: {fileID: 0}
+  animator: {fileID: 1054334453}
+  rb: {fileID: 1054334452}
   canMove: 0
   moveSpeed: 0.5
   rotationSpeed: 6
@@ -8287,7 +8287,7 @@ MonoBehaviour:
   player: {fileID: 1749551344}
   canMove: 0
   chaseDistance: 6
-  attackRange: 2.2
+  attackRange: 8
   attackCooldown: 2
   rotationSpeed: 6
   jabTrigger: Jab
