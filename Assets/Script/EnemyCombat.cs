@@ -114,8 +114,9 @@ public class EnemyCombat : MonoBehaviour
         currentState = State.Chase;
     }
 
-  //  public bool IsAttacking()
-   // {
-   //     return isAttacking;
-   // }
+    public bool IsAttacking()
+    {
+        return isAttacking;
+    }
+  
 }
