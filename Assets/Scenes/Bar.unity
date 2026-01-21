@@ -8328,6 +8328,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageToPlayer: 10
+--- !u!111 &1054334457
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1054334448}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Animation: {fileID: 0}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_UpdateMode: 0
+  m_CullingType: 0
 --- !u!4 &1067685204 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 73ffbc06802a247cfb1b26f4ee67eba8, type: 3}
@@ -12014,6 +12030,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cfb8615c29d9f4bb4bb0f9bd8f920d36, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1054334455}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cfb8615c29d9f4bb4bb0f9bd8f920d36, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1054334457}
   m_SourcePrefab: {fileID: 100100000, guid: cfb8615c29d9f4bb4bb0f9bd8f920d36, type: 3}
 --- !u!4 &1661930312 stripped
 Transform:
