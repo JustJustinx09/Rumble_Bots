@@ -26,12 +26,13 @@ public class EnemyCombat : MonoBehaviour
 
     void Start()
     {
+        animator = GetComponent<Animator>();
         if (player == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
             if (p != null) player = p.transform;
         }
-        animator = GetComponent<Animator>();
+        
     }
 
     void Update()

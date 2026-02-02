@@ -12,11 +12,11 @@ public class EnemyMovement : MonoBehaviour
     public float chaseDistance = 5f;
     public float attackDistance = 2.2f;
 
-    public float attackCooldown = 2f;
-    public float attackDuration = 0.7f;
-    private float nextAttackTime = 0f;
+    // public float attackCooldown = 2f;
+    // public float attackDuration = 0.7f;
+    // private float nextAttackTime = 0f;
 
-    private bool isAttacking = false;
+    // private bool isAttacking = false;
 
     void Start()
     {
@@ -37,7 +37,7 @@ public class EnemyMovement : MonoBehaviour
 
         FacePlayer();
 
-        if (isAttacking) return;
+        // if (isAttacking) return;
 
         float dist = Vector3.Distance(transform.position, player.position);
 
@@ -49,7 +49,7 @@ public class EnemyMovement : MonoBehaviour
         else
         {
             animator.SetBool("isWalking", false);
-            TryAttack();
+            // TryAttack();
         }
     }
 
@@ -71,22 +71,22 @@ public class EnemyMovement : MonoBehaviour
         rb.MovePosition(rb.position + forward * moveSpeed * Time.deltaTime);
     }
 
-    void TryAttack()
-    {
-        if (Time.time < nextAttackTime) return;
+    // void TryAttack()
+    // {
+    //     if (Time.time < nextAttackTime) return;
 
-        isAttacking = true;
-        nextAttackTime = Time.time + attackCooldown;
+    //     isAttacking = true;
+    //     nextAttackTime = Time.time + attackCooldown;
 
-        int atk = Random.Range(0, 2);
-        string trigger = (atk == 0) ? "Jab" : "Kick";
+    //     int atk = Random.Range(0, 2);
+    //     string trigger = (atk == 0) ? "Jab" : "Kick";
 
-        animator.SetTrigger(trigger);
-        Invoke(nameof(ResetAttack), attackDuration);
-    }
+    //     animator.SetTrigger(trigger);
+    //     Invoke(nameof(ResetAttack), attackDuration);
+    // }
 
-    void ResetAttack()
-    {
-        isAttacking = false;
-    }
+    // void ResetAttack()
+    // {
+    //     isAttacking = false;
+    // }
 }
