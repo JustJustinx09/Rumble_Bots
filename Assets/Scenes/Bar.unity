@@ -6292,7 +6292,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 104
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -8221,8 +8221,6 @@ MonoBehaviour:
   rotationSpeed: 6
   chaseDistance: 10
   attackDistance: 0.1
-  attackCooldown: 2
-  attackDuration: 0.7
 --- !u!54 &1054334452
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8263,7 +8261,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 0ecb4282944714443af332c346624134, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 1
@@ -8335,13 +8333,16 @@ Animation:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1054334448}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   m_Animation: {fileID: 0}
-  m_Animations: []
+  m_Animations:
+  - {fileID: 1827226128182048838, guid: 737090279e443489297eb9eba1078dad, type: 3}
+  - {fileID: 1827226128182048838, guid: 04f5b2de6cae847a0bd50c390789ca24, type: 3}
+  - {fileID: 1827226128182048838, guid: e9f41a56a49014d51989b17e26453d27, type: 3}
   m_WrapMode: 0
-  m_PlayAutomatically: 1
-  m_AnimatePhysics: 0
+  m_PlayAutomatically: 0
+  m_AnimatePhysics: 1
   m_UpdateMode: 0
   m_CullingType: 0
 --- !u!4 &1067685204 stripped
@@ -11963,7 +11964,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cfb8615c29d9f4bb4bb0f9bd8f920d36, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.004
+      value: 0.0056
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: cfb8615c29d9f4bb4bb0f9bd8f920d36, type: 3}
       propertyPath: m_LocalPosition.z
