@@ -44,7 +44,7 @@ public class EnemyMovement : MonoBehaviour
         if (dist > attackDistance)
         {
             animator.SetBool("isWalking", true);
-            MoveForward();
+            MoveForward();;
         }
         else
         {
