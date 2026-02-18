@@ -94,7 +94,7 @@ public class RoundManager : MonoBehaviour
         roundText.text = "Round " + currentRound;
 
         player1.ResetHealth();
-        player2.ResetHealth();
+        //player2.ResetHealth();
 
         ResetPositions();
         DisablePlayerControl();
@@ -210,31 +210,31 @@ public class RoundManager : MonoBehaviour
         player1.transform.position = player1Spawn.position;
         player1.transform.rotation = player1Spawn.rotation;
 
-        player2.transform.position = player2Spawn.position;
-        player2.transform.rotation = player2Spawn.rotation;
+        //player2.transform.position = player2Spawn.position;
+        //player2.transform.rotation = player2Spawn.rotation;
 
         Rigidbody rb1 = player1.GetComponent<Rigidbody>();
         if (rb1) rb1.linearVelocity = Vector3.zero;
 
-        Rigidbody rb2 = player2.GetComponent<Rigidbody>();
-        if (rb2) rb2.linearVelocity = Vector3.zero;
+        //Rigidbody rb2 = player2.GetComponent<Rigidbody>();
+        //if (rb2) rb2.linearVelocity = Vector3.zero;
     }
 
     private void DisablePlayerControl()
     {
         player1Movement.canMove = false;
-        player2Movement.canMove = false;
+        //player2Movement.canMove = false;
 
         player1Attack.canMove = false;
-        player2Attack.canMove = false;
+        //player2Attack.canMove = false;
     }
 
     private void EnablePlayerControl()
     {
         player1Movement.canMove = true;
-        player2Movement.canMove = true;
+        //player2Movement.canMove = true;
 
         player1Attack.canMove = true;
-        player2Attack.canMove = true;
+        //player2Attack.canMove = true;
     }
 }
