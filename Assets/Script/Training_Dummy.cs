@@ -23,7 +23,7 @@ public class TrainingDummy : MonoBehaviour
         if (rb != null) rb.isKinematic = true;
 
        
-        Invoke(nameof(ResetDummy), 9f);
+        Invoke(nameof(ResetDummy), .5f);
     }
 
     void ResetDummy()
